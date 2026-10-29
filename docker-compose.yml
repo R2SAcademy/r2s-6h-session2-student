@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # Database Service: PostgreSQL 16 Alpine with Healthcheck
+  # --------------------------------------------------------------------------
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: r2s-postgres-student
+    restart: always
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_student_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - r2s-student-network
+
+networks:
+  r2s-student-network:
+    driver: bridge
+
+volumes:
+  postgres_student_data:
+    driver: local
